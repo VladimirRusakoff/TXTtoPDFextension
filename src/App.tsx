@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { jsPDF } from 'jspdf';
 import './App.css';
 import RobotoFont from './fonts/Roboto-Regular.ttf';
-import Rating from './Rating';
+import RateUs from './RateUs';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -126,7 +126,7 @@ function App() {
   };
 
   return (
-    <div className={`w-[400px] ${pdfUrl ? 'h-[440px]' : 'h-[400px]'} bg-gray-100 p-4`}>
+    <div className={`w-[400px] ${pdfUrl ? 'h-[360px]' : 'h-[320px]'} bg-gray-100 p-4`}>
       <div className="bg-white rounded-lg shadow-md p-4">
         <h1 className="text-xl font-bold text-center mb-4">
           Convert TXT to PDF
@@ -196,9 +196,10 @@ function App() {
               Download
             </a>
           )}
-
-          <Rating />
-
+          <div className="flex items-center gap-2 justify-center w-full">
+            <RateUs />
+          </div>
+        
         </div>
       </div>
     </div>
