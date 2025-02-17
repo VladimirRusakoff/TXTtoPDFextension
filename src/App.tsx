@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { jsPDF } from 'jspdf';
 import './App.css';
-import RobotoFont from './fonts/Roboto-Regular.ttf';
 import RateUs from './RateUs';
 
 function App() {
@@ -56,10 +55,6 @@ function App() {
         orientation: isLandscape ? 'landscape' : 'portrait',
         unit: 'mm'
       });
-
-      // добавляем поддержку кириллицы
-      pdf.addFont(RobotoFont, 'Roboto', 'normal');
-      pdf.setFont('Roboto');
 
       // устанавливаем отступы и максимальную высоту страницы в зависимости от ориентации
       const margin = 10;
