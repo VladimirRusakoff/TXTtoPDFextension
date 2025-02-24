@@ -115,11 +115,6 @@ function App() {
       const pdfBlob = pdf.output('blob');
       const url = URL.createObjectURL(pdfBlob);
       setPdfUrl(url);
-
-      //// для расширения Chrome: открываем PDF в новой вкладке
-      //if (chrome?.tabs) {
-      //  chrome.tabs.create({ url: url });
-      //}
     };
 
     reader.readAsText(selectedFile, 'UTF-8'); // явно указываем кодировку UTF-8
