@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { jsPDF } from 'jspdf';
 import './App.css';
 import RobotoFont from './fonts/Roboto-Regular.ttf';
@@ -54,7 +54,11 @@ function App() {
       // создаем PDF с нужной ориентацией
       const pdf = new jsPDF({
         orientation: isLandscape ? 'landscape' : 'portrait',
-        unit: 'mm'
+        unit: 'mm',
+        format: 'a4',
+        putOnlyUsedFonts: true,
+        compress: true,
+        hotfixes: ['px_scaling']
       });
 
       // добавляем поддержку кириллицы
@@ -111,14 +115,38 @@ function App() {
         }
       });
 
-      // создаем URL для скачивания PDF
-      const pdfBlob = pdf.output('blob');
-      const url = URL.createObjectURL(pdfBlob);
-      setPdfUrl(url);
+      // создаем и скачиваем PDF напрямую
+      try {
+        const pdfOutput = pdf.output('arraybuffer');
+        const blob = new Blob([pdfOutput], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+
+        // создаем ссылку для скачивания
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'document.pdf';
+        link.click();
+
+        // Очищаем URL
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 100);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+      }
     };
 
     reader.readAsText(selectedFile, 'UTF-8'); // явно указываем кодировку UTF-8
   };
+
+  // При размонтировании компонента очищаем URL
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    };
+  }, [pdfUrl]);
 
   return (
     <div className={`w-[400px] ${pdfUrl ? 'h-[360px]' : 'h-[320px]'} bg-gray-100 p-4`}>
