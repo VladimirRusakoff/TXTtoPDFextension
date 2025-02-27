@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jspdf/dist/jspdf.umd.min';
 import './App.css';
 import RobotoFont from './fonts/Roboto-Regular.ttf';
 import RateUs from './RateUs';
@@ -120,6 +120,21 @@ function App() {
     reader.readAsText(selectedFile, 'UTF-8'); // явно указываем кодировку UTF-8
   };
 
+  // Добавьте новую функцию для сохранения PDF
+  const handleDownload = () => {
+    if (pdfUrl) {
+      const fileName = selectedFile ? selectedFile.name.replace('.txt', '.pdf') : 'converted.pdf';
+      
+      // Создаем невидимый элемент для скачивания
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className={`w-[400px] ${pdfUrl ? 'h-[360px]' : 'h-[320px]'} bg-gray-100 p-4`}>
       <div className="bg-white rounded-lg shadow-md p-4">
@@ -183,13 +198,12 @@ function App() {
           </button>
 
           {pdfUrl && (
-            <a
-              href={pdfUrl}
-              download="converted.pdf"
-              className="block w-full text-center bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-base font-medium" // добавили text-base font-medium
+            <button
+              onClick={handleDownload}
+              className="block w-full text-center bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-base font-medium"
             >
               Download
-            </a>
+            </button>
           )}
           <div className="flex items-center gap-2 justify-center w-full">
             <RateUs />
