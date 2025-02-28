@@ -1,8 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
-import { jsPDF } from 'jspdf/dist/jspdf.umd.min';
 import './App.css';
-import RobotoFont from './fonts/Roboto-Regular.ttf';
 import RateUs from './RateUs';
+import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -46,75 +45,45 @@ function App() {
   const convertToPdf = async () => {
     if (!selectedFile) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    try {
+      const reader = new FileReader();
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
-      const lines = text.split('\n');
 
       // создаем PDF с нужной ориентацией
-      const pdf = new jsPDF({
-        orientation: isLandscape ? 'landscape' : 'portrait',
-        unit: 'mm'
-      });
+      const pdf = await PDFDocument.create();
+      const page = pdf.addPage(isLandscape ? [842, 595] : [595, 842]);
 
-      // добавляем поддержку кириллицы
-      pdf.addFont(RobotoFont, 'Roboto', 'normal');
-      pdf.setFont('Roboto');
+      // добавляем шрифт 
+      const font = await pdf.embedFont(StandardFonts.Helvetica);
+      const fontSize = 12;
 
-      // устанавливаем отступы и максимальную высоту страницы в зависимости от ориентации
-      const margin = 10;
-      const maxPageHeight = isLandscape ? 210 : 297;
-      const maxLineWidth = isLandscape ? 2.8*277 : 3*190;
-      let y = margin;
-      const x = margin;
-
-      lines.forEach((line) => {
-        // если текст не помещается на текущей странице, добавляем новую
-        if (y > maxPageHeight - margin) {
-          pdf.addPage();
-          y = margin;
-        }
-
-        // получаем фактическую ширину строки
-        const lineWidth = pdf.getStringUnitWidth(line) * pdf.getFontSize();
-
-        // если строка слишком длинная, разбиваем её на части
-        if (lineWidth > maxLineWidth) {
-          const words = line.split(' ');
-          let currentLine = '';
-
-          words.forEach((word) => {
-            const testLine = currentLine + (currentLine ? ' ' : '') + word;
-            const testWidth = pdf.getStringUnitWidth(testLine) * pdf.getFontSize();
-
-            //console.log(`Line width: ${testWidth}mm, Max width: ${maxLineWidth}mm, Text: ${testLine}`);
-            if (testWidth > maxLineWidth) {
-              pdf.text(currentLine, x, y);
-              y += 7; 
-              if (y > maxPageHeight - margin) {
-                pdf.addPage();
-                y = margin;
-              }
-              currentLine = word;
-            } else {
-              currentLine = testLine;
-            }
+      // добавляем текст  
+      const lines = text.split('\n');
+      const margin = 50;
+      let y = page.getHeight() - margin;
+      
+      page.setFont(font);
+      page.setFontSize(fontSize);
+      
+      lines.forEach(line => {
+        if (y > margin) {
+          page.drawText(line, {
+            x: margin,
+            y: y,
+            font,
+            size: fontSize,
           });
-
-          if (currentLine) {
-            pdf.text(currentLine, x, y);
-            y += 7;
-          }
-        } else {
-          pdf.text(line, x, y);
-          y += 7;
+          y -= fontSize * 1.2; // межстрочный интервал
         }
       });
-
-      // создаем URL для скачивания PDF
-      const pdfBlob = pdf.output('blob');
-      const url = URL.createObjectURL(pdfBlob);
+      
+      const pdfBytes = await pdf.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
       setPdfUrl(url);
+    }
+    
     };
 
     reader.readAsText(selectedFile, 'UTF-8'); // явно указываем кодировку UTF-8
@@ -215,4 +184,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
