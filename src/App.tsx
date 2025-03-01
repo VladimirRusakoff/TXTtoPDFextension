@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { jsPDF } from 'jspdf/dist/jspdf.umd.min';
+import { jsPDF } from './lib/jspdf';
 import './App.css';
 import RobotoFont from './fonts/Roboto-Regular.ttf';
 import RateUs from './RateUs';
@@ -63,8 +63,8 @@ function App() {
 
       // устанавливаем отступы и максимальную высоту страницы в зависимости от ориентации
       const margin = 10;
-      const maxPageHeight = isLandscape ? 210 : 297;
-      const maxLineWidth = isLandscape ? 2.8*277 : 3*190;
+      const maxPageHeight = isLandscape ? 210 : 287;
+      const maxLineWidth = isLandscape ? 760 : 560;
       let y = margin;
       const x = margin;
 
