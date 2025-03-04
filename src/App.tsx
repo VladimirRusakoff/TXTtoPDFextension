@@ -62,9 +62,9 @@ function App() {
       pdf.setFont('Roboto');
 
       // устанавливаем отступы и максимальную высоту страницы в зависимости от ориентации
-      const margin = 10;
+      const margin = 17;
       const maxPageHeight = isLandscape ? 210 : 297;
-      const maxLineWidth = isLandscape ? 2.8*277 : 3*190;
+      const maxLineWidth = isLandscape ? 760 : 510;
       let y = margin;
       const x = margin;
 
