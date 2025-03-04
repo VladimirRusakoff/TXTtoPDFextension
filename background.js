@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       // Code to be executed on first install
       // eg. open a tab with a url
       chrome.tabs.create({
-        url: "https://txttopdf.extensions.it.com/",
+        url: "https://useful.extensions.it.com/",
       });
     } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE) {
       // When extension is updated
@@ -17,3 +17,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       // When a shared module is updated
     }
   });
+
+const UNINSTALL_URL = "https://useful.extensions.it.com/txt_to_pdf_uninstall";
+chrome.runtime.setUninstallURL(UNINSTALL_URL);
